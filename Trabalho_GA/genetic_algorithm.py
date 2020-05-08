@@ -1,7 +1,7 @@
 import random as random
 import bisect
 
-class Genetic_Algorithm:
+class GeneticAlgorithm:
 
 	def genetic_algorithm(self, population, fn_fitness, gene_pool, fn_thres=None, ngen=1000, pmut=0.1):
 		
