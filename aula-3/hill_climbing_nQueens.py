@@ -1,5 +1,30 @@
 import random
 
+# evaluation class; 
+# since that a solution needs to be evaluated with respect to the problem instance 
+# in consideration, we created this class to store the problem instance and to 
+# allow the evaluation to be performed without having the problem instance at hand
+class EvaluateNQueens:
+    # during initialization, store the problem instance
+    def __init__(self, problem_instance):
+        self.problem_instance = problem_instance
+    
+    # compute the value of the received solution
+    def __call__(self, solution):
+        conflicts = 0
+
+        for (c1, r1) in enumerate(solution):
+          for (c2, r2) in enumerate(solution):
+            if c2 <= c1:
+              continue
+            if (r1, c1) != (r2, c2):
+              if (r1 == r2) or (c1 == c2) or (r1 - c1 == r2 - c2) or (r1 + c1 == r2 + c2):
+                conflicts+=1
+
+        return -conflicts 
+
+
+
 def hill_climbing(init_state, fn_neighbours, fn_evaluate, possible_values, iterations=10000):
     
     current = init_state
@@ -27,42 +52,15 @@ def argmax_random_tie(seq, key=lambda x: x):
     random.shuffle(items)
     return max(items, key=key)
 
-# instance of the N-Queens problem
-n = 8
 
-# evaluation class for the n-Queens problem
-class EvaluateNQueens:
-    # during initialization, store the problem instance
-    def __init__(self, n):
-        self.n = n
-    
-    # compute the value of the received solution
-    def __call__(self, solution):
-        conflicts = 0
-
-        for (c1, r1) in enumerate(solution):
-          for (c2, r2) in enumerate(solution):
-            if c2 <= c1:
-              continue
-            if (r1, c1) != (r2, c2):
-              if (r1 == r2) or (c1 == c2) or (r1 - c1 == r2 - c2) or (r1 + c1 == r2 + c2):
-                conflicts+=1
-
-        # our hill climbing implementation maximises the value; 
-        # thus, instead of returning only the number of conflicts (which we  
-        # would want to minimise instead of maximise), we return its negative
-        return -conflicts 
-
-# create an instance of the evaluation class for the considered problem instance
-
-def find_neighbours_NQueens(state, possible_values): #same as in graph coloring
+def find_neighbours_NQueens(state, possible_values):
     
     # list of neighbours
     neighbours = []
 
-    # for each position
+    # for each position (i.e., territory)
     for i in range(len(state)):
-        # for each possible value
+        # for each possible value (i.e., colour)
         for v in possible_values:
             # if the change generates a new neighbour, create it and add to the neighbourhood list
             if state[i] != v:
@@ -73,6 +71,10 @@ def find_neighbours_NQueens(state, possible_values): #same as in graph coloring
     return neighbours
 
 def main():
+    # number of n-queens
+    n = 8
+
+    # create an instance of the evaluation class for the considered problem instance
     fn_evaluate = EvaluateNQueens(n)
 
     # set of possible values 
@@ -86,7 +88,8 @@ def main():
 
     # print the results
     print('Resulting solution: %s' % best)
-    print('Value of resulting solution (the closer to zero the best): %d' % fn_evaluate(best))
+    print('Value of resulting solution: %d' % fn_evaluate(best))
+
 
 if __name__ == "__main__":
     main()
